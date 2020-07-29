@@ -1,0 +1,39 @@
+{
+  "name": "sinri/ark-web-psr",
+  "description": "Ark Web Component following PSR",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Sinri Edogawa",
+      "email": "e.joshua.s.e@gmail.com"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "sinri/ark-core": "~2.7",
+    "psr/http-server-middleware": "^1.0",
+    "psr/http-message": "^1.0",
+    "psr/http-factory": "^1.0",
+    "ext-json": "*"
+  },
+  "require-dev": {
+    "guzzlehttp/psr7": "^1.6"
+  },
+  "autoload": {
+    "psr-4": {
+      "sinri\\ark\\web\\psr\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "sinri\\ark\\web\\psr\\test\\": "test/"
+    }
+  },
+  "repositories": {
+    "packagist": {
+      "type": "composer",
+      "url": "https://mirrors.aliyun.com/composer/"
+    }
+  }
+}
