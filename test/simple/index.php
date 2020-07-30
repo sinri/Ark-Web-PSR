@@ -1,10 +1,17 @@
 <?php
-require_once __DIR__.'/../../vendor/autoload.php';
 
-$router=new \sinri\ark\web\psr\service\ArkWebRouterForPSR();
-$router->addRouteRule(new \sinri\ark\web\psr\test\simple\SimpleRouteRuleA());
+use sinri\ark\web\psr\service\ArkWebRouterForPSR;
+use sinri\ark\web\psr\service\ArkWebServiceForPSR;
+use sinri\ark\web\psr\test\simple\SimpleRouteRuleA;
 
-$service=new \sinri\ark\web\psr\service\ArkWebServiceForPSR();
+require_once __DIR__ . '/../../vendor/autoload.php';
+
+$router = new ArkWebRouterForPSR();
+$router->addRouteRule(new SimpleRouteRuleA());
+
+$service = new ArkWebServiceForPSR();
 $service->setRouter($router);
 $service->handle();
 
+
+// http://localhost/phpstorm/Ark-Web-PSR/test/simple/index.php/any?c=d&e=f#/h/i

@@ -4,11 +4,14 @@
 namespace sinri\ark\web\psr\service;
 
 
-use sinri\ark\web\psr\psr7\ArkWebRequest;
+use Exception;
+use sinri\ark\core\ArkLoggerPropertyTrait;
 use sinri\ark\web\psr\psr7\ArkWebServerRequest;
 
 class ArkWebRouterForPSR
 {
+    use ArkLoggerPropertyTrait;
+
     /**
      * @var ArkWebRouteRuleForPSR[]
      */
@@ -17,7 +20,7 @@ class ArkWebRouterForPSR
     /**
      * @param ArkWebServerRequest $request
      * @return ArkWebRouteRuleForPSR
-     * @throws \Exception No Matched Route Rule
+     * @throws Exception No Matched Route Rule
      */
     public function seekRuleForRequest(ArkWebServerRequest $request):ArkWebRouteRuleForPSR{
         foreach ($this->routeRuleList as $routeRule){
@@ -25,7 +28,7 @@ class ArkWebRouterForPSR
                 return $routeRule;
             }
         }
-        throw new \Exception("Cannot find out the rule matched the request");
+        throw new Exception("Cannot find out the rule matched the request");
     }
 
     public function addRouteRule(ArkWebRouteRuleForPSR $routeRule){

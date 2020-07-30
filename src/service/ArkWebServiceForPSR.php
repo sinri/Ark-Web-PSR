@@ -5,13 +5,14 @@ namespace sinri\ark\web\psr\service;
 
 
 use Exception;
-use sinri\ark\core\ArkHelper;
-use sinri\ark\web\psr\psr17\ArkWebServerRequestFactory;
+use sinri\ark\core\ArkLoggerPropertyTrait;
 use sinri\ark\web\psr\psr7\ArkWebResponse;
 use sinri\ark\web\psr\psr7\ArkWebServerRequest;
 
 class ArkWebServiceForPSR
 {
+    use ArkLoggerPropertyTrait;
+
     /**
      * @var ArkWebRouterForPSR
      */
@@ -42,7 +43,7 @@ class ArkWebServiceForPSR
             // 2. seek route rule
             $routeRule=$this->router->seekRuleForRequest($request);
             // 3. execute and make response
-            $response=$routeRule->executeWithHandlerQueue($request);
+            $response = $routeRule->execute($request);
             // 4. respond to client
             ArkWebResponse::respond($response);
         } catch (Exception $e) {

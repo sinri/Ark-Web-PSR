@@ -22,7 +22,9 @@ class ArkWebUri implements UriInterface
     protected $fragment;
 
     public static function fromUriString(string $uriString){
+//        echo __METHOD__.'@'.__LINE__.' uri string: '.$uriString.PHP_EOL;
         $parts=parse_url($uriString);
+//        var_dump($parts);
         $array=new ArkArray($parts);
         $instance=new ArkWebUri();
         $instance->scheme=$array->read('scheme');

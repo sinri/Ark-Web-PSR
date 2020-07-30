@@ -4,6 +4,7 @@
 namespace sinri\ark\web\psr\psr15;
 
 
+use Closure;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -16,17 +17,29 @@ class ArkWebRequestHandler implements RequestHandlerInterface
      */
     protected $response;
     /**
-     * @var callable function(ServerRequestInterface $request,ArkWebResponse $response):ArkWebResponse
+     * @var callable|array function(ServerRequestInterface $request,ArkWebResponse $response):ArkWebResponse
      */
     protected $handleCallable;
 
     /**
-     * @param callable $handleCallable
+     * @param callable $handleCallable support pure callable (closure) and class-method array
      * @return ArkWebRequestHandler
      */
-    public function setHandleCallable(callable $handleCallable): ArkWebRequestHandler
+    public function setHandleCallable($handleCallable): ArkWebRequestHandler
     {
         $this->handleCallable = $handleCallable;
+        return $this;
+    }
+
+    public function setHandleCallableWithClosure(Closure $handleCallable): ArkWebRequestHandler
+    {
+        $this->handleCallable = $handleCallable;
+        return $this;
+    }
+
+    public function setHandleCallableWithClassAndMethod(string $className, string $method)
+    {
+        $this->handleCallable = [$className, $method];
         return $this;
     }
 

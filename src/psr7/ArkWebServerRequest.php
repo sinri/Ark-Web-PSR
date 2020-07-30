@@ -16,6 +16,8 @@ use sinri\ark\core\ArkHelper;
  */
 class ArkWebServerRequest extends ArkWebRequest implements ServerRequestInterface
 {
+    const ATTRIBUTE_REQUEST_SN = 'request_sn';
+
     protected $serverParameters;
     protected $cookieParameters;
     protected $queryParameters;
@@ -342,24 +344,24 @@ class ArkWebServerRequest extends ArkWebRequest implements ServerRequestInterfac
         }
 
         // uri
-        $schema=ArkHelper::readTarget($_SERVER,['REQUEST_SCHEME'],'http');
-        $requestUri=ArkHelper::readTarget($_SERVER,['REQUEST_URI'],'');
+        $schema = ArkHelper::readTarget($_SERVER, ['REQUEST_SCHEME'], 'http');
+        $host = ArkHelper::readTarget($_SERVER, ['HTTP_HOST'], '');
+        $requestUri = ArkHelper::readTarget($_SERVER, ['REQUEST_URI'], '');
         $username=ArkHelper::readTarget($_SERVER,['PHP_AUTH_USER']);
         $password=ArkHelper::readTarget($_SERVER,['PHP_AUTH_PW']);
         $auth=
             $username===null
                 ?''
-                :(
-                    $username
-                    .(
-                        $password===null
-                            ?''
-                            :(':'.$password)
-                    )
-                    .'@'
+                : (
+                $username
+                . (
+                $password === null
+                    ? ''
+                    : (':' . $password)
                 )
-        ;
-        $uri=ArkWebUri::fromUriString($schema.'://'.$auth.$requestUri);
+                . '@'
+            );
+        $uri = ArkWebUri::fromUriString($schema . '://' . $auth . $host . $requestUri);
 
         // header (ArkWebHeader[])
         $headers=[];
@@ -386,12 +388,15 @@ class ArkWebServerRequest extends ArkWebRequest implements ServerRequestInterfac
         }
 
         // injection of uploading file
-        $uploadFiles=[];
-        $uploadedFileMetaList=ArkUploadedFileMeta::fetchAllUploadedFiles();
-        foreach ($uploadedFileMetaList as $meta){
-            $uploadFiles[]=ArkUploadedFile::createUploadedFileWithMeta($meta);
+        $uploadFiles = [];
+        $uploadedFileMetaList = ArkUploadedFileMeta::fetchAllUploadedFiles();
+        foreach ($uploadedFileMetaList as $meta) {
+            $uploadFiles[] = ArkUploadedFile::createUploadedFileWithMeta($meta);
         }
         $instance->setUploadedFiles($uploadFiles);
+
+        // initialize request sn
+        $instance->setAttribute(self::ATTRIBUTE_REQUEST_SN, uniqid('REQ-SN-', true));
 
         return $instance;
     }

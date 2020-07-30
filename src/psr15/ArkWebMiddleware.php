@@ -26,12 +26,22 @@ class ArkWebMiddleware implements MiddlewareInterface
      */
     protected $response;
 
-    public function __construct(ArkWebResponse $response=null)
+    public function __construct(ArkWebResponse $response = null)
     {
-        if($response===null){
-            $response=ArkWebResponse::makeResponse(200,'OK');
+        if ($response === null) {
+            $response = ArkWebResponse::makeResponse(200, 'OK');
         }
-        $this->response=$response;
+        $this->response = $response;
+    }
+
+    /**
+     * @param ArkWebResponse $response
+     * @return ArkWebMiddleware
+     */
+    public function setResponse(ArkWebResponse $response): ArkWebMiddleware
+    {
+        $this->response = $response;
+        return $this;
     }
 
     /**
@@ -41,22 +51,50 @@ class ArkWebMiddleware implements MiddlewareInterface
      * If unable to produce the response itself, it may delegate to the provided
      * request handler to do so.
      * @param ServerRequestInterface $request
-     * @param RequestHandlerInterface $handler
+     * @param RequestHandlerInterface $handler If own handler exists, it might be null
      * @return ResponseInterface
      */
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler = null): ResponseInterface
     {
-        $this->request=$request;
-        $this->handler=$handler;
+        $this->request = $request;
 
-        $this->prepare();
+        $this->handler = $this->getOwnHandler();
+        if ($this->handler === null) {
+            $this->handler = $handler;
+        }
+        if ($this->handler === null) {
+            return $this->response;
+        }
 
-        return $handler->handle($this->request);
-    }
-
-    protected function prepare(){
-        if($this->handler instanceof ArkWebRequestHandler) {
+        if ($this->handler instanceof ArkWebRequestHandler) {
             $this->handler->setResponse($this->response);
         }
+
+        return $this->handler->handle($this->request);
+    }
+
+    /**
+     * @return ArkWebRequestHandler|null
+     * By default it returns null, to use the provided handler.
+     * If its own handler is available, the provided handler would be ignored.
+     * So if you want to write a pure middleware with handler itself,
+     * Override this class and this method.
+     */
+    protected function getOwnHandler()
+    {
+        return null;
+    }
+
+//    protected function handlerMethod(ServerRequestInterface $request,ArkWebResponse $response):ArkWebResponse{
+//        $response->appendToBody(__METHOD__.'@'.__LINE__.PHP_EOL);
+//        return $response;
+//    }
+
+    /**
+     * @return bool
+     */
+    public function shouldFinishRequestHandleQueue()
+    {
+        return $this->response->isHandleFinished();
     }
 }
